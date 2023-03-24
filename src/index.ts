@@ -49,7 +49,7 @@ const TypeMenu: any = {
   'jp-mainmenu-kernel': 'kernelMenu',
   'jp-mainmenu-tabs': 'tabsMenu',
   'jp-mainmenu-settings': 'settingsMenu',
-  'jp-mainmenu-help': 'helpMenu'
+  'jp-mainTestmenu-help': 'helpMenu'
 };
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -63,6 +63,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     settingRegistry: ISettingRegistry
   ) => {
     console.log('JupyterLab extension jlab_custom_ui is activated!');
+    // const { commands } = app;
 
     async function displayInformation(): Promise<void> {
       const result = await showDialog({
@@ -79,16 +80,15 @@ const plugin: JupyterFrontEndPlugin<void> = {
     let listMenuItem: IMenuItem[] = [];
 
     const updateSettings = (settings: ISettingRegistry.ISettings): void => {
-      listMenuItem = settings?.composite.menu as IMenuItem[];
-      console.log({ listMenuItem });
+      listMenuItem = settings?.composite?.menu as IMenuItem[];
+      console.log(listMenuItem);
 
-      listMenuItem.forEach((menuItem: IMenuItem) => {
+      listMenuItem?.forEach((menuItem: IMenuItem) => {
         const typeMenu: TMenuType = TypeMenu[menuItem.id];
         if (menuItem.disabled) {
-          mainMenu[typeMenu].menu.setHidden(true);
-          mainMenu[typeMenu].menu.dispose();
-        } else {
-          mainMenu[typeMenu].menu.setHidden(false);
+          mainMenu[typeMenu]?.menu.setHidden(true);
+          mainMenu[typeMenu]?.menu.dispose();
+          return;
         }
 
         if (!menuItem.items) {
@@ -144,14 +144,22 @@ const plugin: JupyterFrontEndPlugin<void> = {
       }
     );
 
-    // commands.addCommand('Test', {
+    // const command = 'filemenu:logout';
+    // const item = mainMenu.fileMenu.items.find(i => i.command === command);
+
+    // if (item) {
+    //   mainMenu.fileMenu.menu.removeItem(item);
+    //   mainMenu.fileMenu.menu.insertItem(20, {
+    //     command: item.command,
+    //     args: item.args,
+    //     submenu: item.submenu,
+    //     type: item.type
+    //   });
+    // }
+    // commands.addCommand('filemenu:logout', {
     //   caption: 'Custom layout',
-    //   label: 'Customize layout',
     //   execute: () => {
-    //     const content = new CustomMenuItem();
-    //     const widget = new MainAreaWidget<CustomMenuItem>({ content });
-    //     widget.title.label = 'MenuItem Custom';
-    //     app.shell.add(widget, 'main');
+    //     console.log('function');
     //   }
     // });
     // const menu = new Menu({ commands });
