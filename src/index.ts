@@ -76,12 +76,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
         location.reload();
       }
     }
+    console.log(mainMenu.fileMenu.rank);
 
     let listMenuItem: IMenuItem[] = [];
 
     const updateSettings = (settings: ISettingRegistry.ISettings): void => {
       listMenuItem = settings?.composite?.menu as IMenuItem[];
-      console.log(listMenuItem);
+      // console.log(listMenuItem);
 
       listMenuItem?.forEach((menuItem: IMenuItem) => {
         const typeMenu: TMenuType = TypeMenu[menuItem.id];
@@ -97,20 +98,25 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
         menuItem?.items.forEach((item: IItem) => {
           if (item.type !== 'submenu') {
-            if (item.disabled) {
-              const findItem = mainMenu[typeMenu].items.find(
-                i => i.command === item.command
-              ) as Menu.IItem;
-              mainMenu[typeMenu].menu.removeItem(findItem);
+            const findItem = mainMenu[typeMenu]?.items.find(
+              i => i.command === item.command
+            ) as Menu.IItem;
+            mainMenu[typeMenu]?.menu.removeItem(findItem);
+            if (item?.disabled) {
+              return;
             }
+            mainMenu[typeMenu]?.menu.insertItem(Math.round(item.rank ?? 0), {
+              command: findItem?.command,
+              submenu: findItem?.submenu,
+              type: findItem?.type
+            });
           }
 
           if (item.type === 'submenu') {
-            const findItem = mainMenu[typeMenu].items.find(
-              i => i.type === 'submenu' && i.label === item.submenu?.label
-            ) as Menu.IItem;
-
             if (item.disabled || item.submenu?.disabled) {
+              const findItem = mainMenu[typeMenu].items.find(
+                i => i.type === 'submenu' && i.label === item.submenu?.label
+              ) as Menu.IItem;
               mainMenu[typeMenu].menu.removeItem(findItem);
               return;
             }
@@ -120,6 +126,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
             item.submenu.items.forEach((sub: IItem) => {
               if (sub.disabled) {
+                const findItem = mainMenu[typeMenu].items.find(
+                  i => i.type === 'submenu' && i.label === item.submenu?.label
+                ) as Menu.IItem;
+
                 const subDisableItem = findItem.submenu?.items.find(
                   i => i.type === sub.type && i.command === sub.command
                 ) as Menu.IItem;
@@ -138,8 +148,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
         updateSettings(settings);
 
         settings?.changed.connect(async () => {
-          updateSettings(settings);
           await displayInformation();
+          updateSettings(settings);
         });
       }
     );
