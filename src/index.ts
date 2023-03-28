@@ -76,41 +76,60 @@ const plugin: JupyterFrontEndPlugin<void> = {
         location.reload();
       }
     }
+    console.log(mainMenu.fileMenu.rank);
 
     let listMenuItem: IMenuItem[] = [];
 
     const updateSettings = (settings: ISettingRegistry.ISettings): void => {
       listMenuItem = settings?.composite?.menu as IMenuItem[];
-      console.log(listMenuItem);
 
       listMenuItem?.forEach((menuItem: IMenuItem) => {
         const typeMenu: TMenuType = TypeMenu[menuItem.id];
         if (menuItem.disabled) {
-          mainMenu[typeMenu]?.menu.setHidden(true);
           mainMenu[typeMenu]?.menu.dispose();
           return;
         }
 
+        //* Set rank of menu item
+        mainMenu.addMenu(mainMenu[typeMenu].menu, { rank: menuItem?.rank });
+
+        //* Check if have menuItem.items
         if (!menuItem.items) {
           return;
         }
 
+        //* map for each item in menu item
         menuItem?.items.forEach((item: IItem) => {
+          //* if item.type === 'command'
           if (item.type !== 'submenu') {
-            if (item.disabled) {
-              const findItem = mainMenu[typeMenu].items.find(
-                i => i.command === item.command
-              ) as Menu.IItem;
-              mainMenu[typeMenu].menu.removeItem(findItem);
-            }
-          }
-
-          if (item.type === 'submenu') {
-            const findItem = mainMenu[typeMenu].items.find(
-              i => i.type === 'submenu' && i.label === item.submenu?.label
+            //* Find item match children of menu item
+            const findItem = mainMenu[typeMenu]?.items.find(
+              i => i.command === item.command
             ) as Menu.IItem;
 
+            //! Remove item
+            mainMenu[typeMenu]?.menu.removeItem(findItem);
+            if (item?.disabled) {
+              return;
+            }
+
+            //* set menu item with rank
+            mainMenu[typeMenu]?.menu.insertItem(Math.round(item.rank ?? 0), {
+              command: findItem?.command,
+              submenu: findItem?.submenu,
+              type: findItem?.type
+            });
+          }
+
+          //* if item.type === submenu
+          if (item.type === 'submenu') {
             if (item.disabled || item.submenu?.disabled) {
+              //? Find match item
+              const findItem = mainMenu[typeMenu].items.find(
+                i => i.type === 'submenu' && i.label === item.submenu?.label
+              ) as Menu.IItem;
+
+              //! Remove item
               mainMenu[typeMenu].menu.removeItem(findItem);
               return;
             }
@@ -118,12 +137,16 @@ const plugin: JupyterFrontEndPlugin<void> = {
               return;
             }
 
+            //? Similary
             item.submenu.items.forEach((sub: IItem) => {
               if (sub.disabled) {
+                const findItem = mainMenu[typeMenu].items.find(
+                  i => i.type === 'submenu' && i.label === item.submenu?.label
+                ) as Menu.IItem;
+
                 const subDisableItem = findItem.submenu?.items.find(
                   i => i.type === sub.type && i.command === sub.command
                 ) as Menu.IItem;
-                console.log({ subDisableItem });
 
                 findItem.submenu?.removeItem(subDisableItem);
               }
@@ -133,13 +156,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
       });
     };
 
+    //* Update settings
     Promise.all([settingRegistry?.load(PLUGIN_ID), app.restored]).then(
       ([settings]) => {
         updateSettings(settings);
 
         settings?.changed.connect(async () => {
-          updateSettings(settings);
           await displayInformation();
+          updateSettings(settings);
         });
       }
     );
