@@ -14,6 +14,7 @@ import { PartialJSONObject } from '@lumino/coreutils';
  * Initialization data for the jlab_custom_ui extension.
  */
 const PLUGIN_ID = 'jlab_custom_ui:plugin';
+const MENU_SETTING_ORIGIN = '@jupyterlab/mainmenu-extension:plugin';
 
 type IItem = {
   label?: string;
@@ -76,22 +77,48 @@ const plugin: JupyterFrontEndPlugin<void> = {
         location.reload();
       }
     }
-    console.log(mainMenu.fileMenu.rank);
 
     let listMenuItem: IMenuItem[] = [];
+    let listOriginMenu: IMenuItem[] = [];
+
+    //! remove item with id
+    const removeItemWithId = (id: string) => {
+      listOriginMenu = listOriginMenu?.filter(
+        (item: IMenuItem) => item.id !== id
+      );
+    };
 
     const updateSettings = (settings: ISettingRegistry.ISettings): void => {
       listMenuItem = settings?.composite?.menu as IMenuItem[];
-
       listMenuItem?.forEach((menuItem: IMenuItem) => {
         const typeMenu: TMenuType = TypeMenu[menuItem.id];
-        if (menuItem.disabled) {
-          mainMenu[typeMenu]?.menu.dispose();
+
+        if (menuItem.disabled === true) {
+          removeItemWithId(menuItem?.id);
+
+          listOriginMenu = [
+            ...listOriginMenu,
+            {
+              id: menuItem.id,
+              disabled: menuItem.disabled
+            }
+          ];
+          return;
+        }
+        if (!mainMenu[typeMenu]?.rank) {
           return;
         }
 
-        //* Set rank of menu item
-        mainMenu.addMenu(mainMenu[typeMenu].menu, { rank: menuItem?.rank });
+        //* Set rank menu item
+
+        removeItemWithId(menuItem?.id);
+        listOriginMenu = [
+          ...listOriginMenu,
+          {
+            id: menuItem.id,
+            rank: menuItem?.rank
+          }
+        ];
 
         //* Check if have menuItem.items
         if (!menuItem.items) {
@@ -160,37 +187,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
     Promise.all([settingRegistry?.load(PLUGIN_ID), app.restored]).then(
       ([settings]) => {
         updateSettings(settings);
-
         settings?.changed.connect(async () => {
-          await displayInformation();
           updateSettings(settings);
+          settingRegistry.set(MENU_SETTING_ORIGIN, 'menus', listOriginMenu);
+
+          displayInformation();
         });
       }
     );
-
-    // const command = 'filemenu:logout';
-    // const item = mainMenu.fileMenu.items.find(i => i.command === command);
-
-    // if (item) {
-    //   mainMenu.fileMenu.menu.removeItem(item);
-    //   mainMenu.fileMenu.menu.insertItem(20, {
-    //     command: item.command,
-    //     args: item.args,
-    //     submenu: item.submenu,
-    //     type: item.type
-    //   });
-    // }
-    // commands.addCommand('filemenu:logout', {
-    //   caption: 'Custom layout',
-    //   execute: () => {
-    //     console.log('function');
-    //   }
-    // });
-    // const menu = new Menu({ commands });
-    // menu.title.label = 'Customize';
-    // menu.addItem({ command: 'Test' });
-
-    // mainMenu.addMenu(menu, { rank: 300 });
   }
 };
 

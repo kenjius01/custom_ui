@@ -1,15 +1,6 @@
 {
   "title": "Main Menu",
   "description": "Main JupyterLab menu settings.",
-  "jupyter.lab.menus": {
-    "main": [
-      {
-        "id": "jp-mainmenu-example-menu",
-        "label": "Main Menu Example",
-        "disabled": true
-      }
-    ]
-  },
   "properties": {
     "menu": {
       "title": "The application menu description.",
