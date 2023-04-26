@@ -2,6 +2,7 @@
 /* stylelint-disable selector-class-pattern */
 
 .jp-CustomMenuItem {
+  color: var(--jp-content-font-color0);
   height: 100%;
 }
 
@@ -16,8 +17,8 @@
 .jp-CustomMenuItem .actionForm button {
   cursor: pointer;
   appearance: none;
-  border: 1px solid rgba(27, 31, 35, 0.15);
-  box-shadow: rgba(27, 31, 35, 0.1) 0 1px 0;
+  border: 1px solid rgb(27 31 35 / 15%);
+  box-shadow: rgb(27 31 35 / 10%) 0 1px 0;
   border-radius: 6px;
   box-sizing: border-box;
   color: #fff;
@@ -59,8 +60,9 @@
 .jp-CustomMenuItem .actionForm .submitButton:hover {
   background-color: #2c974b;
 }
+
 .jp-CustomMenuItem .actionForm .submitButton:focus {
-  box-shadow: rgba(46, 164, 79, 0.4) 0 0 0 3px;
+  box-shadow: rgb(46 164 79 / 40%) 0 0 0 3px;
   outline: none;
 }
 
