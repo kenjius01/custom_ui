@@ -56,10 +56,10 @@
   },
   "dependencies": {
     "@jupyterlab/application": "^3.1.0",
-    "@jupyterlab/apputils": "^3.5.2",
-    "@jupyterlab/mainmenu": "^3.5.2",
+    "@jupyterlab/apputils": "^3.1.0",
+    "@jupyterlab/mainmenu": "^3.1.0",
     "@jupyterlab/settingregistry": "^3.1.0",
-    "@jupyterlab/ui-components": "^3.5.2",
+    "@jupyterlab/ui-components": "^3.1.0",
     "@rjsf/core": "^3.1.0",
     "json-schema": "~0.4.0"
   },
