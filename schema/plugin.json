@@ -850,11 +850,8 @@
           "type": "boolean",
           "default": false
         },
-        "icon": {
-          "description": "Menu icon id",
-          "type": "string"
-        },
         "id": {
+          "readOnly": true,
           "description": "Menu unique id",
           "type": "string",
           "pattern": "[a-z][a-z0-9\\-_]+"
@@ -879,7 +876,8 @@
         },
         "command": {
           "description": "Command id",
-          "type": "string"
+          "type": "string",
+          "readOnly": true
         },
         "disabled": {
           "description": "Whether the item is disabled or not",

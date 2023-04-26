@@ -58,7 +58,11 @@
     "@jupyterlab/application": "^3.1.0",
     "@jupyterlab/apputils": "^3.5.2",
     "@jupyterlab/mainmenu": "^3.5.2",
-    "@jupyterlab/settingregistry": "^3.1.0"
+    "@jupyterlab/settingregistry": "^3.1.0",
+    "ajv": "8",
+    "uniforms": "^4.0.0-alpha.3",
+    "uniforms-bridge-json-schema": "^4.0.0-alpha.3",
+    "uniforms-semantic": "^4.0.0-alpha.3"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^3.1.0",
@@ -89,5 +93,8 @@
     "extension": true,
     "outputDir": "jlab_custom_ui/labextension",
     "schemaDir": "schema"
+  },
+  "resolutions": {
+    "**/@types/react": "^17.0.0"
   }
 }
