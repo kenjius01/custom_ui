@@ -56,7 +56,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     menu.addItem({ command: 'customMenuItem' });
 
-    mainMenu.addMenu(menu, { rank: 300 });
+    mainMenu.addMenu(menu, { rank: 1000 });
   }
 };
 
